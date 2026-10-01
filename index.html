@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PrintTac: Reproducible Tactile Fingertips for Scalable Robot Learning</title>
-  <meta name="description" content="PrintTac is a low-cost, DIY-reproducible tactile fingertip for consistent, scalable multimodal robot learning.">
+  <meta name="description" content="PrintTac is a reproducible tactile fingertip for scalable robot learning: demonstrations and policies transfer across independently fabricated sensors.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
@@ -29,25 +29,26 @@
     <section class="hero wrap">
       <p class="kicker">Under review</p>
       <h1>PrintTac: Reproducible Tactile Fingertips for Scalable Robot Learning</h1>
-      <p class="subtitle">From rapid fabrication to contact-rich manipulation.</p>
+      <p class="subtitle">Tactile data and policies that transfer across sensor instances.</p>
       <p class="authors">Anonymous Authors</p>
       <div class="actions">
         <a class="btn" href="#video">Video</a>
+        <a class="btn ghost" href="https://github.com/pigwu/ARPoseStreamer" target="_blank" rel="noopener">Data Collection Code</a>
         <a class="btn ghost" href="#bibtex">BibTeX</a>
       </div>
 
       <div id="video" class="hero-video">
-        <video controls preload="metadata" playsinline poster="assets/teaser.jpg">
+        <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls poster="assets/teaser.jpg">
           <source src="assets/demo.mp4" type="video/mp4">
         </video>
       </div>
-      <p class="caption">Project video: fabrication, untethered UMI collection, and visuo-tactile rollouts versus a vision-only baseline.</p>
+      <p class="caption">Project video: portable collection, then the same policy on independently fabricated fingertips.</p>
 
       <div class="stats">
-        <div class="stat"><strong>&lt;USD 35</strong><span>material cost per finger</span></div>
-        <div class="stat"><strong>5 min</strong><span>assembly, no per-device recalibration</span></div>
-        <div class="stat"><strong>5 × 3-axis</strong><span>off-the-shelf magnetometers</span></div>
-        <div class="stat"><strong>&lt;2 mm / 0.5°</strong><span>hand–eye calibration residual</span></div>
+        <div class="stat"><strong>S<sub>demo</sub> → S<sub>eval</sub></strong><span>same policy, no retraining</span></div>
+        <div class="stat"><strong>4 tasks</strong><span>insertion, grasping, wiping</span></div>
+        <div class="stat"><strong>0% → 90%</strong><span>wiping from the initial image only</span></div>
+        <div class="stat"><strong>No recalibration</strong><span>force models transfer to a new finger</span></div>
       </div>
     </section>
 
@@ -55,7 +56,7 @@
       <h2>Abstract</h2>
       <div class="abstract">
         <p>
-          While tactile feedback is critical for contact-rich manipulation, scaling tactile robot learning remains bottlenecked by hardware costs, fabrication complexity, and sensor-to-sensor domain gaps that hinder data reuse. High-resolution tactile sensors incur substantial visual-encoding overheads, while existing low-cost magnetic alternatives rely on elastomer casting with limited manufacturing consistency. We present PrintTac, a low-cost (&lt;USD 35), DIY-reproducible tactile fingertip designed for consistent, scalable multimodal data collection. By coupling an off-the-shelf magnetometer board with a monolithic 3D-printed compliant mechanism, PrintTac replaces cast elastomers with a reproducible flexure, eliminating elastomer mixing, casting, and curing. It can be assembled in five minutes without per-device recalibration and features a modular, quickly replaceable contact tip. We integrate PrintTac into an untethered UMI data-collection system that synchronizes tactile signals, visual streams, and ARKit poses onboard a smartphone over Wi-Fi. Real-robot experiments on insertion, grasping, and surface-interaction tasks show that PrintTac-conditioned policies consistently outperform vision-only baselines trained on the same demonstrations.
+          Scaling tactile robot learning is limited less by a single sensor reading than by whether that reading, and the policy trained on it, still mean the same thing on the next device. PrintTac is a reproducible tactile fingertip for that setting. A monolithic 3D-printed flexure and an off-the-shelf magnetometer array encode contact as a compact magnetic signal, so force models and manipulation policies transfer to independently fabricated instances without per-device recalibration. On an untethered UMI, the phone logs touch, vision, and ARKit pose together, which is what makes collecting the next demonstration as reusable as the last. On insertion, grasping, and surface wiping, policies conditioned on PrintTac outperform vision-only policies trained on the same demonstrations, including when online vision is removed and only the initial frame remains.
         </p>
       </div>
     </section>
@@ -84,7 +85,7 @@
             Fig. 2. Finite-element analysis under a 30 N load: (a) upward shear, (b) lateral shear, and (c) normal compression. Dual wave-shaped PETG springs keep the structure in the linear elastic regime.
           </figcaption>
           <h3>Why a printed flexure</h3>
-          <p>High-resolution optical sensors are expensive and shift the learning problem onto visual encoders. Cast magnetic skins are cheaper, but mixing, casting, and curing introduce instance-to-instance variation. PrintTac uses a monolithic PETG flexure instead.</p>
+          <p>Optical fingertips turn touch into another image to encode, and cast skins change from mix to mix, so a dataset or policy rarely survives a sensor swap. A monolithic PETG flexure keeps the contact-to-signal mapping stable enough to reuse.</p>
         </figure>
         <figure class="card">
           <img src="assets/fingertip.png" alt="Modular PrintTac fingertips with interchangeable contact geometries">
@@ -96,21 +97,21 @@
 
       <div class="grid-2" style="margin-top:18px">
         <article class="card">
-          <video autoplay muted loop playsinline preload="metadata" src="assets/print1.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" src="assets/print1.mp4"></video>
           <h3>Desktop 3D printing</h3>
           <p>Each flexure is printed from the same CAD model with a fixed set of printing parameters, so the kinematics stay consistent across independently fabricated units.</p>
         </article>
         <article class="card">
-          <video autoplay muted loop playsinline preload="metadata" src="assets/print2.mp4"></video>
-          <h3>Five-minute assembly</h3>
-          <p>The sensing core is an eFlesh-style board with five three-axis magnetometers, neodymium magnets on the contact plate, and an Adafruit QT Py ESP32. Material cost is under USD 35 per finger.</p>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" src="assets/print2.mp4"></video>
+          <h3>Repeatable assembly</h3>
+          <p>Five three-axis magnetometers, magnets on the contact plate, and a wireless microcontroller. The same printed design is what lets a policy trained on one set of fingers run on another.</p>
         </article>
       </div>
 
       <figure class="figure" style="margin-top:18px">
-        <video autoplay muted loop playsinline preload="metadata" src="assets/assembly.mp4"></video>
+        <video autoplay muted loop playsinline webkit-playsinline preload="auto" src="assets/assembly.mp4"></video>
         <figcaption>
-          Sped-up assembly of a PrintTac fingertip. Each finger can be put together in about five minutes from printed parts, magnets, and the off-the-shelf magnetometer board.
+          Sped-up assembly from a shared design, so new fingertips can join the data-collection and deployment fleet without a new sensing stack.
         </figcaption>
       </figure>
     </section>
@@ -136,17 +137,17 @@
 
       <div class="grid-3" style="margin-top:18px">
         <article class="card">
-          <video autoplay muted loop playsinline preload="metadata" src="assets/umi_chip.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" src="assets/umi_chip.mp4"></video>
           <h3>Chip picking</h3>
           <p>UMI demonstration with wrist RGB, PrintTac, and ARKit pose recorded onboard the iPhone.</p>
         </article>
         <article class="card">
-          <video autoplay muted loop playsinline preload="metadata" src="assets/umi_insert.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" src="assets/umi_insert.mp4"></video>
           <h3>Plug insertion</h3>
           <p>The same untethered pipeline collects visuo-tactile demonstrations for tight-tolerance insertion.</p>
         </article>
         <article class="card">
-          <video autoplay muted loop playsinline preload="metadata" src="assets/umi_wipe.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" src="assets/umi_wipe.mp4"></video>
           <h3>Whiteboard wiping</h3>
           <p>Contact-rich wiping demonstrations without a host PC tether during collection.</p>
         </article>
@@ -198,25 +199,25 @@
           <h3>Chip picking</h3>
           <p>63 demonstrations. Tactile contact onset stops finger closure before the chip fractures. Vision-only often drops or crushes it. 20% → 100%.</p>
           <div class="split-label"><span>PrintTac</span><span>Vision-only</span></div>
-          <video controls muted loop playsinline preload="none" src="assets/chip.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/chip.mp4"></video>
         </article>
         <article class="card task">
           <h3>Plug insertion</h3>
           <p>65 demonstrations. Touch detects casing contact and snap-through; vision-only can jam against the housing. 40% → 90%.</p>
           <div class="split-label"><span>PrintTac</span><span>Vision-only</span></div>
-          <video controls muted loop playsinline preload="none" src="assets/insert.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/insert.mp4"></video>
         </article>
         <article class="card task">
           <h3>Whiteboard wiping</h3>
           <p>68 demonstrations, evaluated on boards tilted up to 15°. Tactile preload tracks the incline; vision-only loses contact. 30% → 90%.</p>
           <div class="split-label"><span>PrintTac</span><span>Vision-only</span></div>
-          <video controls muted loop playsinline preload="none" src="assets/wipe.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/wipe.mp4"></video>
         </article>
         <article class="card task">
           <h3>Tactile-only wiping</h3>
           <p>Both policies receive only the initial image <em>o</em><sub>0</sub>. Only the PrintTac policy gets closed-loop touch. 0% → 90%.</p>
           <div class="split-label"><span>PrintTac</span><span>Vision-only</span></div>
-          <video controls muted loop playsinline preload="none" src="assets/blind_eval.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/blind_eval.mp4"></video>
         </article>
       </div>
 
@@ -277,6 +278,29 @@
   </footer>
 
   <script>
+    const videos = document.querySelectorAll("video");
+    const startVideo = (video) => {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      const pending = video.play();
+      if (pending) pending.catch(() => {});
+    };
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            if (video.getAttribute("preload") !== "auto") video.preload = "auto";
+            if (video.readyState < 2) video.load();
+            startVideo(video);
+          }
+        });
+      }, { rootMargin: "240px 0px", threshold: 0.2 });
+      videos.forEach((video) => observer.observe(video));
+    }
+    videos.forEach(startVideo);
+
     const button = document.getElementById("copy-bib");
     const code = document.querySelector("#bibtex-block code");
     button.addEventListener("click", async () => {
