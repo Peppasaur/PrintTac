@@ -9,7 +9,7 @@
   --ok: #0f766e;
   --fail: #b42318;
   --shadow: 0 12px 40px rgba(22, 22, 22, 0.08);
-  --max: 1080px;
+  --max: 1240px;
 }
 
 * {
@@ -120,9 +120,15 @@ h1 {
   font-size: 20px;
 }
 
-.authors,
+.authors {
+  margin: 6px 0 0;
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1.6;
+}
+
 .venue {
-  margin: 0;
+  margin: 4px 0 0;
   color: var(--muted);
   font-size: 15px;
 }

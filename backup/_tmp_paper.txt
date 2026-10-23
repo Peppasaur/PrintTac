@@ -1,0 +1,306 @@
+===== PAGE 5 =====
+which modulates the intermediate features of the 1D U-Net
+via Feature-wise Linear Modulation [25].
+B. Action Representation and Closed-Loop Execution
+Following the UMI formulation [11], the policy pre-
+dicts a sequence of n future end-effector waypoints At =
+{at+1, . . . , at+n}. Each action waypoint aτ = (∆Tτ, wτ)
+consists of a 6-DoF end-effector pose relative to the current
+tool frame along with the absolute gripper opening width
+wτ ∈[0, 1]. Formulating trajectories in the local relative
+coordinate frame improves cross-environment spatial gener-
+alization.
+The policy is executed in a receding-horizon control loop.
+Although the diffusion model generates an entire chunk of n
+future steps, the robot executes only the immediate k steps
+(k ≤n) before re-sampling observations and re-conditioning
+the policy. This continuous closed-loop replenishment allows
+the policy to react dynamically to instantaneous contact
+events—such as jamming during tight pin-slot insertion or
+slippage during grasping—at high control frequencies.
+Observation Modality Variants: In addition to the stan-
+dard closed-loop setting where Ot = {ot−1, ot} updates
+continuously, we investigate a vision-deprived tactile control
+setting in the tactile only wiping task in Section VI-B. Under
+this scenario, visual input is restricted strictly to the initial
+scene frame (Ot = {o0}), forcing the diffusion policy to
+guide fine-grained action entirely through PrintTac tactile
+dynamics.
+VI. EXPERIMENTS
+Our empirical evaluation investigates the physical sensing
+fidelity of PrintTac and its real-world utility for contact-
+rich robotic manipulation by addressing four core research
+questions:
+Q1: Force-Estimation Fidelity. How accurately can the
+magnetic measurements predict normal and shear
+forces under held-out loading trajectories?
+Q2: Fabrication consistency. Does additive manufacturing
+reproducibility preserve the magnetic-to-force mapping
+across independently fabricated units, enabling zero-
+shot calibration reuse without per-instance retraining?
+Q3: Contact-Phase Identifiability. Can low-dimensional
+PrintTac observations unambiguously distinguish crit-
+ical contact transitions throughout dynamic manipula-
+tion sequences?
+Q4: Closed-Loop Policy Utility. Does incorporating tactile
+feedback improve task success rates over vision-only
+policies?
+A. Force Estimation and Fabrication Consistency
+To answer Q1 and Q2, we benchmark both within-instance
+force-estimation accuracy and zero-shot cross-instance cali-
+bration transfer. We independently 3D-print and assemble
+two distinct PrintTac elastomers (SA and SB) following
+the identical fabrication procedure. A multiaxial load cell
+records ground-truth forces over dynamic loading protocols
+ranging from 0 to 25 N across both normal and shear
+Fig. 5: Model architecture of force-estimation task. An
+MLP maps PrintTac magnetic measurements to the predicted
+contact force. Ground-truth measurements from the wrist
+force–torque sensor are used only for training supervision
+and evaluation, and are not required during inference.
+directions (Fig. 5). A lightweight multi-layer perceptron
+(MLP) is trained strictly on measurement sequences from
+instance SA. We first quantify within-instance accuracy on
+held-out loading trajectories collected on SA (Q1), and
+subsequently deploy this unmodified model directly onto the
+unseen instance SB without per-device recalibration, fine-
+tuning, or baseline offset adjustment (Q2).
+Normal-Force
+Estimation:
+Under
+held-out
+within-
+instance testing on SA, the model achieves a Mean Absolute
+Error (MAE) of 0.345 N, corresponding to a Normalized
+MAE (NMAE) of 1.38% over the full 25 N operational
+dynamic range (Fig. 6(a) Top). When evaluating this frozen
+model on the independently fabricated instance SB, the MAE
+shifts to 0.705 N (NMAE: 2.82%, Fig. 6(a) Bottom). Cru-
+cially, despite the complete absence of sensor recalibration,
+the cross-instance MAE increases by 0.360 N, equivalent
+to 1.44% of the 25 N force range. This minor drift confirms
+that our monolithic 3D-printed flexure successfully maintains
+predictable force-displacement kinematics across separate
+fabrication cycles.
+Shear-Force Estimation: Under shear loading, the esti-
+mator yields an MAE of 0.196 N (NMAE: 0.78%) on held-
+out trials from SA (Fig. 6 (b) Top). When evaluated directly
+on the unseen instance SB, the model retains exceptional
+fidelity, yielding an MAE of 0.202 N (NMAE: 0.81%, Fig. 6
+(b) Bottom). The cross-instance error increase is negligible
+(0.006 N, or 0.024% of the dynamic range), demonstrating
+that the lateral dual-spring geometry enforces tight mechan-
+ical constraints against parasitic transverse displacements.
+Taken together, these evaluations confirm that PrintTac
+provides high-fidelity force feedback for manipulation (Q1)
+and that its physical response profile is preserved across
+independently fabricated units, eliminating the per-device
+calibration bottleneck in tactile learning workflows (Q2).
+B. Contact-Rich Manipulation
+To address Q3 and Q4, we analyze the physical contact
+signatures and multimodal trajectory dynamics across three
+representative contact-rich manipulation tasks: plug inser-
+tion, delicate chip picking, and compliant whiteboard wiping
+(Fig. 7). These benchmarks encompass critical manipulation
+
+===== PAGE 7 =====
+Fig. 7: Qualitative rollout trajectories and contact-phase signatures across contact-rich manipulation tasks. Benchmarks
+are evaluated on a Franka Research 3 manipulator fitted with a Robotiq 2F-85 gripper and PrintTac fingertips. In each rollout,
+temporal magnetic trajectories (displaying four prominent magnetometer channels for visual clarity) clearly demarcate distinct
+contact transitions: (a) impact, surface search, and snap-through insertion during plug mating; (b) soft contact landing and
+sustained pinch regulation during delicate chip picking; and (c) constant normal preload and stick-slip friction oscillations
+during tilted surface wiping. Note that only 4 magnetometer readings are shown for concision, and each reading is the sum
+of the three measured field components.
+Fig. 8: Vision-deprived surface wiping evaluation. The
+policy receives only the initial static RGB image (t = 0) to
+estimate rough workspace bounds; the entire subsequent de-
+scent, surface contact detection, and planar wiping sequence
+are governed exclusively by closed-loop PrintTac feedback.
+abrupt step-change in magnetic flux, followed by steady-state
+oscillations reflecting dynamic stick-slip friction as the felt
+eraser traverses the board. Conditioned on this continuous
+feedback, the policy dynamically adjusts its Cartesian verti-
+cal trajectory to track the inclined contour while maintaining
+consistent normal pre-load.
+4) Wiping without Online Visual Feedback: To evaluate
+whether low-dimensional PrintTac observations can support
+reactive manipulation when visual perception is completely
+severed, we conduct a vision-deprived experiment on the
+wiping task (Fig. 8).
+We collect 39 demonstrations with variable board heights.
+During closed-loop rollout, the policy is conditioned strictly
+on the initial visual snapshot Ot = {o0} captured while
+the arm is hovering in free space. The control loop must
+therefore execute the approach, contact detection, and planar
+cleaning entirely through closed-loop proprioception and
+tactile feedback. As verified in the trajectories, the policy
+maintains an open-loop downward plunge until PrintTac
+detects surface collision via an abrupt step-change in mag-
+netic flux. Upon registering contact, the policy immediately
+halts vertical descent and smoothly transitions into tangential
+wiping passes, actively regulating the normal force across
+the unknown surface height. This demonstrates that PrintTac
+provides physically sufficient, unambiguous contact cues
+capable of driving reactive behaviors even under extreme
+perceptual degradation.
+C. Contact-Rich Manipulation Policy Performance
+We compare policies trained with and without tactile
+observations using the same demonstration datasets, policy
+backbone, and number of training epochs. Both policies
+receive the same visual and proprioceptive inputs; the visuo-
+tactile policy additionally receives PrintTac measurements.
+For each task, we evaluate each policy over 10 trials under
+matched scene configurations and robot initial poses. A plug-
+insertion trial succeeds when more than 80% of the plug’s
+insertion length enters the socket. Chip picking succeeds
+
+===== PAGE 8 =====
+Task
+Vision Only
+Vision + PrintTac
+Plug Insertion
+40% (4/10)
+90% (9/10)
+Chip Picking
+20% (2/10)
+100% (10/10)
+Whiteboard Wiping
+30% (3/10)
+90% (9/10)
+Tactile-Only Wiping
+0% (0/10)
+90% (9/10)
+TABLE I: Task success with and without tactile input.
+Policies with PrintTac input achieve higher success rates than
+policies without tactile input in the evaluated tasks. Note
+that policy trained on demonstrations collected with Sdemo
+transfer directly to Seval without per-device recalibration.
+when the robot grasps the chip and lifts it to the designated
+location. Whiteboard wiping succeeds when more than 90%
+of the visible markings are removed. Trials that do not
+meet the success criterion within 45 seconds are counted
+as failures.
+We also evaluate wiping without online visual feedback.
+In this setting, both policies receive only the initial image
+throughout the episode, while proprioceptive observations
+continue to update. The visuo-tactile policy also receives
+updated tactile measurements. The success criterion is the
+same as for whiteboard wiping.
+As shown in Tab. I, adding tactile input improves success
+rates on all four tasks. Success increases from 40% to 90%
+for plug insertion, from 20% to 100% for chip picking, and
+from 30% to 90% for whiteboard wiping. Without online
+visual feedback, the policy with tactile input succeeds in 9 of
+10 trials, whereas the policy without tactile input fails in all
+10 trials. These results support the benefit of tactile feedback
+for the evaluated contact-rich tasks, addressing Q4.
+Demonstrations
+are
+collected
+using
+a
+UMI
+gripper
+equipped with sensor instances Sdemo, while robot evaluation
+uses separately fabricated instances Seval. The policies are
+deployed without retraining. Successful execution with Seval
+provides evidence of policy transfer across sensor instances
+under the tested conditions, addressing Q2.
+VII. CONCLUSION AND FUTURE WORK
+We present PrintTac, a tactile fingertip that combines a
+3D-printed compliant structure, off-the-shelf sensing com-
+ponents, and a replaceable contact tip. We integrate it into
+a portable demonstration-collection interface and evaluate
+its use in robot learning. Force-estimation models transfer
+across separately fabricated fingertips, and policies using
+tactile observations achieve higher task success rates than
+policies without tactile input.
+Long-term durability and drift under sustained or repeated
+loading remain to be characterized. Future work will also
+address magnetic interference and reduce the size of the com-
+pliant structure. By simplifying fabrication and supporting
+the reuse of tactile data and learned models across sensor
+instances, PrintTac lowers practical barriers to scaling tactile
+robot learning.
+REFERENCES
+[1] C. Chi, S. Feng, Y. Du, Z. Xu, E. Cousineau, B. C. Burchfiel, and
+S. Song, “Diffusion Policy: Visuomotor Policy Learning via Action
+Diffusion,” in RSS, 2023.
+[2] Z. Fu, T. Z. Zhao, and C. Finn, “Mobile ALOHA: Learning Bimanual
+Mobile Manipulation using Low-Cost Whole-Body Teleoperation,” in
+CoRL, 2025.
+[3] H. Li, Y. Zhang, J. Zhu, S. Wang, M. A. Lee, H. Xu, E. Adelson,
+L. Fei-Fei, R. Gao, and J. Wu, “See, hear, and feel: Smart sensory
+fusion for robotic manipulation,” in CoRL, 2022.
+[4] H. Choi, Y. Hou, C. Pan, S. Hong, A. Patel, X. Xu, M. R. Cutkosky,
+and S. Song, “In-the-wild compliant manipulation with umi-ft,” in
+ICRA, 2026.
+[5] R. Bhirangi, V. Pattabiraman, E. Erciyes, Y. Cao, T. Hellebrekers, and
+L. Pinto, “AnySkin: Plug-and-Play Skin Sensing for Robotic Touch,”
+in ICRA, 2025.
+[6] W. Yuan, S. Dong, and E. H. Adelson, “GelSight: High-Resolution
+Robot Tactile Sensors for Estimating Geometry and Force,” Sensors,
+2017.
+[7] M. Lambeta, P.-W. Chou, S. Tian, B. Yang, B. Maloon, V. R. Most,
+D. Stroud, R. Santos, A. Byagowi, G. Kammerer, D. Jayaraman, and
+R. Calandra, “DIGIT: A Novel Design for a Low-Cost Compact High-
+Resolution Tactile Sensor With Application to In-Hand Manipulation,”
+RAL, 2020.
+[8] R. Bhirangi, T. Hellebrekers, C. Majidi, and A. Gupta, “ReSkin:
+versatile, replaceable, lasting tactile skins,” in CoRL, 2022.
+[9] A. Mohammadi, Y. Xu, Y. Tan, P. Choong, and D. Oetomo, “Magnetic-
+based Soft Tactile Sensors with Deformable Continuous Force Transfer
+Medium for Resolving Contact Locations in Robotic Grasping and
+Manipulation,” Sensors, 2019.
+[10] V. Pattabiraman, Z. Huang, D. Panozzo, D. Zorin, L. Pinto, and
+R. Bhirangi, “eFlesh: Highly customizable Magnetic Touch Sensing
+using Cut-Cell Microstructures,” arXiv preprint arXiv:2506.09994,
+2025.
+[11] C. Chi, Z. Xu, C. Pan, E. Cousineau, B. Burchfiel, S. Feng, R. Tedrake,
+and S. Song, “Universal Manipulation Interface: In-The-Wild Robot
+Teaching Without In-The-Wild Robots,” in RSS, 2024.
+[12] E. Donlon, S. Dong, M. Liu, J. Li, E. Adelson, and A. Rodriguez,
+“GelSlim: A High-Resolution, Compact, Robust, and Calibrated
+Tactile-sensing Finger,” in IROS, 2018.
+[13] C. Lin, H. Zhang, J. Xu, L. Wu, and H. Xu, “9DTact: A Compact
+Vision-Based Tactile Sensor for Accurate 3D Shape Reconstruction
+and Generalizable 6D Force Estimation,” RAL, 2024.
+[14] J. Zhao, N. Kuppuswamy, S. Feng, B. Burchfiel, and E. Adelson,
+“PolyTouch: A Robust Multi-Modal Tactile Sensor for Contact-Rich
+Manipulation Using Tactile-Diffusion Policies,” in ICRA, 2025.
+[15] I. Guzey, B. Evans, S. Chintala, and L. Pinto, “Dexterity from Touch:
+Self-Supervised Pre-Training of Tactile Representations with Robotic
+Play,” in CoRL, 2023.
+[16] T. Wu, J. Li, J. Zhang, M. Wu, and H. Dong, “Canonical Repre-
+sentation and Force-Based Pretraining of 3D Tactile for Dexterous
+Visuo-Tactile Policy Learning,” in ICRA, 2025.
+[17] B. Huang, Y. Wang, X. Yang, Y. Luo, and Y. Li, “3d-vitac: Learning
+fine-grained manipulation with visuo-tactile sensing,” in CoRL, 2024.
+[18] M. Rehan, M. M. Saleem, M. I. Tiwana, R. I. Shakoor, and R. Cheung,
+“A Soft Multi-Axis High Force Range Magnetic Tactile Sensor for
+Force Feedback in Robotic Surgical Systems,” Sensors, 2022.
+[19] F. Liu, C. Li, Y. Qin, J. Xu, P. Abbeel, and R. Chen, “ViTaMIn:
+Learning Contact-Rich Tasks Through Robot-Free Visuo-Tactile Ma-
+nipulation Interface,” arXiv preprint arXiv:2504.06156, 2025.
+[20] X. Zhu, B. Huang, and Y. Li, “Touch in the Wild: Learning Fine-
+Grained Manipulation with a Portable Visuo-Tactile Gripper,” in
+NeurIPS, 2025.
+[21] L. Wu, C. Yu, J. Ren, L. Chen, R. Huang, G. Gu, and H. Li, “Freetac-
+man: Robot-free visuo-tactile data collection system for contact-rich
+manipulation,” in ICRA, 2026.
+[22] T. Cheng, K. Chen, L. Chen, L. Zhang, Y. Zhang, Y. Ling, M. Hamad,
+Z. Bing, F. Wu, K. Sharma, and A. Knoll, “Tacumi: A multi-modal
+universal manipulation interface for contact-rich tasks,” in ICRA, 2026.
+[23] S.
+Benbouziyane,
+“CAD
+Mouse
+MK2,”
+2026,
+open-source
+hardware repository. [Online]. Available: https://github.com/sb-ocr/
+cad-mouse-mk2
+[24] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for
+image recognition,” in CVPR, 2016.
+[25] E. Perez, F. Strub, H. De Vries, V. Dumoulin, and A. Courville, “Film:
+Visual reasoning with a general conditioning layer,” in AAAI, 2018.
