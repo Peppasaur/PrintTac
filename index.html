@@ -27,10 +27,15 @@
 
   <main id="top">
     <section class="hero wrap">
-      <p class="kicker">Under review</p>
       <h1>PrintTac: Reproducible Tactile Fingertips<br>for Scalable Robot Learning</h1>
       <p class="subtitle">Tactile data and policies that transfer across sensor instances.</p>
-      <p class="authors">Haoran Qin, Yunzhi Wu, Minghui Lin, Shu Wang, Anpei Chen</p>
+      <p class="authors">
+        <a href="https://github.com/Peppasaur" target="_blank" rel="noopener noreferrer">Haoran Qin</a>,
+        <a href="https://github.com/pigwu" target="_blank" rel="noopener noreferrer">Yunzhi Wu</a>,
+        <a href="https://scholar.google.com/citations?user=7lT8oQsAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">Minghui Lin</a>,
+        <a href="https://scholar.google.com/citations?view_op=list_works&amp;hl=zh-CN&amp;user=KCNIa_cAAAAJ" target="_blank" rel="noopener noreferrer">Shu Wang</a>,
+        <a href="https://apchenstu.github.io/" target="_blank" rel="noopener noreferrer">Anpei Chen</a>
+      </p>
       <div class="actions">
         <a class="btn" href="#video">Video</a>
         <a class="btn ghost" href="https://github.com/pigwu/ARPoseStreamer" target="_blank" rel="noopener">Data Collection Code</a>
@@ -200,25 +205,25 @@
           <h3>Chip picking</h3>
           <p>63 demonstrations. Tactile contact onset stops finger closure before the chip fractures. Vision-only often drops or crushes it. 20% → 100%.</p>
           <div class="split-label"><span>PrintTac</span><span>Vision-only</span></div>
-          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/chip.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/chip.mp4?v=tactile-minimal-20261120"></video>
         </article>
         <article class="card task">
           <h3>Plug insertion</h3>
           <p>65 demonstrations. Touch detects casing contact and snap-through; vision-only can jam against the housing. 40% → 90%.</p>
           <div class="split-label"><span>PrintTac</span><span>Vision-only</span></div>
-          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/insert.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/insert.mp4?v=tactile-baselines-20261120"></video>
         </article>
         <article class="card task">
           <h3>Whiteboard wiping</h3>
           <p>68 demonstrations, evaluated on boards tilted up to 15°. Tactile preload tracks the incline; vision-only loses contact. 30% → 90%.</p>
           <div class="split-label"><span>PrintTac</span><span>Vision-only</span></div>
-          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/wipe.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/wipe.mp4?v=tactile-baselines-20261120"></video>
         </article>
         <article class="card task">
           <h3>Tactile-only wiping</h3>
           <p>Both policies receive only the initial image <em>o</em><sub>0</sub>. Only the PrintTac policy gets closed-loop touch. 0% → 90%.</p>
           <div class="split-label"><span>PrintTac</span><span>Vision-only</span></div>
-          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/blind_eval.mp4"></video>
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls src="assets/blind_eval.mp4?v=tactile-baselines-20261120"></video>
         </article>
       </div>
 
