@@ -44,8 +44,8 @@
       </div>
 
       <div id="video" class="hero-video">
-        <video autoplay muted loop playsinline webkit-playsinline preload="auto" controls poster="assets/teaser.jpg">
-          <source src="assets/demo.mp4?v=cut19" type="video/mp4">
+        <video autoplay loop playsinline webkit-playsinline preload="auto" controls poster="assets/teaser.jpg">
+          <source src="assets/demo.mp4?v=full-20261120" type="video/mp4">
         </video>
       </div>
       <p class="caption">Project video: portable collection, then the same policy on independently fabricated fingertips.</p>
@@ -285,11 +285,14 @@
 
   <script>
     const videos = document.querySelectorAll("video");
+    videos.forEach((video) => {
+      video.defaultMuted = video.hasAttribute("muted");
+      video.muted = video.defaultMuted;
+    });
     const startVideo = (video) => {
-      video.muted = true;
-      video.defaultMuted = true;
       video.playsInline = true;
       const pending = video.play();
+      // If audible autoplay is blocked, the native play control starts it.
       if (pending) pending.catch(() => {});
     };
     if ("IntersectionObserver" in window) {
